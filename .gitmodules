@@ -1,0 +1,6 @@
+[submodule "Packages/com.shelinc.asynctimer"]
+	path = Packages/com.shelinc.asynctimer
+	url = https://github.com/shelhelix/AsyncTimer
+[submodule "Packages/com.shelinc.gamecomponentattributes"]
+	path = Packages/com.shelinc.gamecomponentattributes
+	url = https://github.com/shelhelix/GameComponentAttributes

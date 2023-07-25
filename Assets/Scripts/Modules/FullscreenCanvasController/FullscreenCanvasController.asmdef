@@ -1,0 +1,19 @@
+{
+    "name": "FullscreenCanvasController",
+    "rootNamespace": "Com.Shelinc.FullscreenCanvasController",
+    "references": [
+        "GUID:f51ebe6a0ceec4240a699833d6309b23",
+        "GUID:029c1c1b674aaae47a6841a0b89ad80e",
+        "GUID:902338aa86b9a5a49b864b40977ace11",
+        "GUID:79a7faa1c5cfb45eda24319fef9286a4"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
