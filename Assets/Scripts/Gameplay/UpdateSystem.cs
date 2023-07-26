@@ -3,6 +3,8 @@ using UnityEngine;
 namespace GameJamEntry.Gameplay {
 	public sealed class UpdateSystem : MonoBehaviour {
 		static UpdateSystem _instance;
+
+		[SerializeField] AudioSource music;
 		
 		public static UpdateSystem Instance {
 			get {
@@ -28,8 +30,9 @@ namespace GameJamEntry.Gameplay {
 		}
 
 		void Update() {
-			_timeScale          = Mathf.Max(0f, _timeScale - TimeSlowDownRate * Time.deltaTime);
-			Time.timeScale      = _timeScale;
+			_timeScale = Mathf.Max(.05f, _timeScale - TimeSlowDownRate * Time.deltaTime);
+			Time.timeScale = _timeScale;
+			music.pitch = _timeScale;
 			Time.fixedDeltaTime = 0.02f * _timeScale;
 		}
 
