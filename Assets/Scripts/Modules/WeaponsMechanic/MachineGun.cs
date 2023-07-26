@@ -18,15 +18,7 @@ namespace GameJamEntry.Gameplay.WeaponsMechanic {
 
 		bool _isPressedFiring;
 
-		GunStatus GunStatus {
-			get => _state;
-			set {
-				Debug.Log($"Change state from {_state} to {value}");
-				_state = value;
-			}
-		}
-
-		GunStatus _state;
+		GunStatus GunStatus { get; set; }
 
 		void Start() {
 			AmmoInMagazineLeft = AmmoInMagazineTotal;

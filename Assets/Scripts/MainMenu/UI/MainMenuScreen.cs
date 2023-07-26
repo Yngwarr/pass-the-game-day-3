@@ -12,7 +12,7 @@ using UnityEngine.UI;
 
 namespace  GameJamEntry.MainMenu.UI {
 	public class MainMenuScreen : BaseScreen {
-		const string JamLink           = "add link to jam here";
+		const string JamLink           = "https://itch.io/jam/day-1";
 		const string GameplaySceneName = "Gameplay";
 		
 		[NotNullReference] [SerializeField] Button PlayButton;

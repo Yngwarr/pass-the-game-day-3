@@ -33,5 +33,11 @@ namespace GameJamEntry.Gameplay {
 			};
 			_iteration = (_iteration + 1) % 6;
 		}
+
+		void OnCollisionEnter2D(Collision2D other) {
+			if ( other.gameObject.GetComponent<Bullet>() ) {
+				Destroy(gameObject);
+			}
+		}
 	}
 }
