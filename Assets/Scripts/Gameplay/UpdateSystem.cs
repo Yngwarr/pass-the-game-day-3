@@ -4,7 +4,7 @@ namespace GameJamEntry.Gameplay {
 	public sealed class UpdateSystem : MonoBehaviour {
 		static UpdateSystem _instance;
 
-		[SerializeField] AudioSource music;
+		[SerializeField] SoundPlayer soundPlayer;
 		
 		public static UpdateSystem Instance {
 			get {
@@ -22,6 +22,7 @@ namespace GameJamEntry.Gameplay {
 		public float TimeSlowDownRate = 1f;
 
 		float _timeScale = 1f;
+		bool _normalTime = true;
 
 		void OnDestroy() {
 			if ( _instance == this ) {
@@ -29,15 +30,30 @@ namespace GameJamEntry.Gameplay {
 			}
 		}
 
-		void Update() {
-			_timeScale = Mathf.Max(.05f, _timeScale - TimeSlowDownRate * Time.deltaTime);
+        void Start() {
+			soundPlayer.setup();
+        }
+
+        void Update() {
+			if (_normalTime) {
+                Time.timeScale = 1;
+                Time.fixedDeltaTime = 0.02f;
+                soundPlayer.setPitch(1);
+				return;
+            }
+
+            _timeScale = Mathf.Max(.05f, _timeScale - TimeSlowDownRate * Time.deltaTime);
 			Time.timeScale = _timeScale;
-			music.pitch = _timeScale;
 			Time.fixedDeltaTime = 0.02f * _timeScale;
+			soundPlayer.setPitch(_timeScale >= .85 ? 1 : _timeScale);
 		}
 
 		public void SpeedUpTime(float addTimeScale) {
 			_timeScale = Mathf.Clamp01(_timeScale + addTimeScale);
+		}
+
+		public void setNormalTime(bool value) {
+			_normalTime = value;
 		}
 	}
 }

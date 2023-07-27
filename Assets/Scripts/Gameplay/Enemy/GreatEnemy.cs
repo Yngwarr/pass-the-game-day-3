@@ -1,12 +1,15 @@
 using GameComponentAttributes.Attributes;
 using GameJamEntry.Gameplay.WeaponsMechanic;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace GameJamEntry.Gameplay {
 	public class GreatEnemy : MonoBehaviour {
 		[NotNullReference] public BaseGun[] Guns;
 
 		IBehaviourNode _activeBehaviour;
+
+		public UnityEvent onDeath;
 
 		int _iteration = 0;
 		

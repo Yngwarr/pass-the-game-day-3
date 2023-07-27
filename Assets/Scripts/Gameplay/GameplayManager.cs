@@ -24,6 +24,7 @@ namespace GameJamEntry.Gameplay {
 		[SerializeField] float _playZoneRadius           = 35 / 2f;
 		[Space]
 		[SerializeField] Player _player;
+		[SerializeField] SoundPlayer _soundPlayer;
 		[Space]
 		[SerializeField] SpawnWarningView _spawnWarningViewPrefab;
 		[SerializeField] GameObject[] _enemyPrefabs = {};
@@ -36,67 +37,87 @@ namespace GameJamEntry.Gameplay {
 
 		Mode _mode = Mode.Idle;
 
-		void Update() {
-			if ( !_player.IsAlive ) {
-				return;
-			}
-			switch ( _mode ) {
-				case Mode.Idle: {
-					if ( _activeEnemies.Count > 0 ) {
-						for ( var i = _activeEnemies.Count - 1; i >= 0; i-- ) {
-							if ( !_activeEnemies[i] ) {
-								_activeEnemies.RemoveAt(i);
-							}
-						}
-					}
-					if ( _activeEnemies.Count == 0 ) {
-						RestartWaveTimer();
-						_mode = Mode.WaveTimer;
-					}
-					break;
-				}
-				case Mode.WaveTimer: {
-					_waveTimer -= Time.deltaTime;
-					if ( _waveTimer <= 0 ) {
-						_mode = Mode.Spawn;
-						SpawnWave().Forget();
-					}
-					break;
-				}
-				case Mode.Spawn: {
-					break;
-				}
-			}
-		}
+        void Update()
+        {
+            if (!_player.IsAlive)
+            {
+                return;
+            }
+            switch (_mode)
+            {
+                case Mode.Idle:
+                    {
+                        if (_activeEnemies.Count > 0)
+                        {
+                            for (var i = _activeEnemies.Count - 1; i >= 0; i--)
+                            {
+                                if (!_activeEnemies[i])
+                                {
+                                    _soundPlayer.muteEnemy(_activeEnemies.Count - 1);
+                                    _activeEnemies.RemoveAt(i);
+                                }
+                            }
+                        }
+                        if (_activeEnemies.Count == 0)
+                        {
+                            _soundPlayer.muteEnemies();
+                            UpdateSystem.Instance.setNormalTime(true);
+                            RestartWaveTimer();
+                            _mode = Mode.WaveTimer;
+                        }
+                        break;
+                    }
+                case Mode.WaveTimer:
+                    {
+                        _waveTimer -= Time.deltaTime;
+                        if (_waveTimer <= 0)
+                        {
+                            UpdateSystem.Instance.setNormalTime(false);
+                            _mode = Mode.Spawn;
+                            SpawnWave().Forget();
+                        }
+                        break;
+                    }
+                case Mode.Spawn:
+                    {
+                        break;
+                    }
+            }
+        }
 
-		void RestartWaveTimer() {
-			_waveTimer = _waveInterval;
-		}
+        void RestartWaveTimer()
+        {
+            _waveTimer = _waveInterval;
+        }
 
-		async UniTaskVoid SpawnWave() {
-			var tasks = new UniTask[_waveEnemiesCount];
-			for ( var i = 0; i < _waveEnemiesCount; i++ ) {
-				await UniTask.Delay(TimeSpan.FromSeconds(_spawnInterval));
-				tasks[i] = SpawnEnemy();
-			}
-			_waveEnemiesCount++;
-			_waveInterval     = Mathf.Max(_waveIntervalMin, _waveInterval - _waveIntervalDecrease);
-			_spawnInterval    = Mathf.Max(_spawnIntervalMin, _spawnInterval - _spawnIntervalDecrease);
-			_spawnWarningTime = Mathf.Max(_spawnWarningTimeMin, _spawnWarningTime - _spawnWarningTimeDecrease);
+        async UniTaskVoid SpawnWave()
+        {
+            var tasks = new UniTask[_waveEnemiesCount];
+            for (var i = 0; i < _waveEnemiesCount; i++)
+            {
+                await UniTask.Delay(TimeSpan.FromSeconds(_spawnInterval));
+                tasks[i] = SpawnEnemy();
+            }
+            _waveEnemiesCount++;
+            _waveInterval = Mathf.Max(_waveIntervalMin, _waveInterval - _waveIntervalDecrease);
+            _spawnInterval = Mathf.Max(_spawnIntervalMin, _spawnInterval - _spawnIntervalDecrease);
+            _spawnWarningTime = Mathf.Max(_spawnWarningTimeMin, _spawnWarningTime - _spawnWarningTimeDecrease);
 
-			await UniTask.WhenAll(tasks);
-			_mode = Mode.Idle;
-		}
+            await UniTask.WhenAll(tasks);
+            _mode = Mode.Idle;
+        }
 
-		Vector3 GetRandomSpawnPosition() => Random.insideUnitCircle.normalized * Random.Range(0, _playZoneRadius);
+        Vector3 GetRandomSpawnPosition() => Random.insideUnitCircle.normalized * Random.Range(0, _playZoneRadius);
 
-		async UniTask SpawnEnemy() {
-			var spawnPosition = GetRandomSpawnPosition();
-			var spawnWarningView = Instantiate(_spawnWarningViewPrefab, spawnPosition, Quaternion.identity);
-			await spawnWarningView.Show(_spawnWarningTime);
-			Destroy(spawnWarningView.gameObject);
-			var enemy = Instantiate(_enemyPrefabs[Random.Range(0, _enemyPrefabs.Length)], spawnPosition, Quaternion.identity);
-			_activeEnemies.Add(enemy);
-		}
-	}
+        async UniTask SpawnEnemy()
+        {
+            var spawnPosition = GetRandomSpawnPosition();
+            var spawnWarningView = Instantiate(_spawnWarningViewPrefab, spawnPosition, Quaternion.identity);
+            await spawnWarningView.Show(_spawnWarningTime);
+            Destroy(spawnWarningView.gameObject);
+            var enemy = Instantiate(_enemyPrefabs[Random.Range(0, _enemyPrefabs.Length)], spawnPosition, Quaternion.identity);
+            _soundPlayer.unmuteEnemy();
+            _activeEnemies.Add(enemy);
+        }
+    }
 }
